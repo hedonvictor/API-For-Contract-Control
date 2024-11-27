@@ -1,5 +1,6 @@
 const express = require('express');
 const { sequelize, Profile, Contract, Job, Deposit } = require('./models');
+const  { seedDatabase } = require('./database/seeds/seedData')
 
 const app = express();
 app.use(express.json());
@@ -77,6 +78,8 @@ app.listen(3000, async () => {
   try {
     await sequelize.sync(); 
     console.log('API rodando na porta 3000!');
+
+    await seedDatabase();
   } catch (error) {
     console.error('Erro ao conectar ao banco de dados:', error.message);
   }

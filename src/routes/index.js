@@ -1,8 +1,36 @@
 const express = require('express');
-const { Profile, Contract } = require('../models');
+const { Job, Profile, Contract } = require('../models');
+const { GetUnpaidJobs } = require('../controllers/ContractsController');
+const { GetContractsById, DepositiForId } = require('../controllers/ProfileControler');
 
 const router = express.Router();
 
+router.get('/contracts/:id/jobs/unpaid', GetUnpaidJobs);
+
+router.get('/:contractId/unpaid-jobs', async (req, res) => {
+  const { contractId } = req.params;
+
+  try {
+    const jobs = await Job.findAll({
+      where: { contractId, paid: false },
+    });
+
+    if (!jobs.length) {
+      return res.status(404).json({ error: 'No unpaid jobs found for this contract' });
+    }
+
+    res.json(jobs);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error', details: error.message });
+  }
+});
+
+
+
+router.get('/profiles/:id/contracts', GetContractsById);
+
+
+router.post('/profiles/:id/deposit', DepositiForId);
 
 router.get('/:profileId/contracts', async (req, res) => {
   const { profileId } = req.params;
@@ -61,4 +89,4 @@ router.post('/:profileId/deposit', async (req, res) => {
   
 });
 
-module.exports = router;
+module.exports = {router};

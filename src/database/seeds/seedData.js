@@ -1,6 +1,14 @@
 const { sequelize, Profile, Contract, Job } = require('../../models');
 
+
 async function seedDatabase() {
+
+    const count = await Profile.count();
+    if(count > 0) {
+        console.log('Registros ja existentes, seeder não executado');
+        return;
+    }
+
     try {
         await sequelize.sync({ force: true });
 
